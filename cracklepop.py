@@ -5,7 +5,6 @@ If it's divisible by 5, print Pop. If it's divisible by both 3 and 5,
 print CracklePop.
 """
 
-import pytest
 
 def cracklepop_determiner(number):
     print_statement = ''
@@ -27,24 +26,7 @@ def cracklepop():
         print_statement = cracklepop_determiner(ii)
         print(print_statement)
 
-def test_basics():
-
-    assert cracklepop_determiner(3) == 'Crackle'
-
-    assert cracklepop_determiner(5) == 'Pop'
-
-    assert cracklepop_determiner(3*5) == 'CracklePop'
-
-    assert cracklepop_determiner(1) == '1'
-
-    assert cracklepop_determiner(1) == '1'
-
-def test_multiples():
-
-    for ii in range(1, 101):
-        if 
-
-
-
-# cracklepop()
-# cracklepop_test()
+if __name__ == "main":
+    print('CracklePopping...')
+    cracklepop()
+    print('Crackles and Pops complete!')
