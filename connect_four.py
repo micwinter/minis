@@ -5,6 +5,7 @@ Program which will allow you to play connect four via the command line.
 # My version of connect four
 import numpy as np
 from tabulate import tabulate
+from colorama import Fore, Style
 
 
 class Connect4Board:
@@ -12,12 +13,25 @@ class Connect4Board:
         # Init Connect4 game board
         self.rows = rows
         self.cols = cols
-        self.board_state = np.zeros((rows, cols))
+        self.board_state = np.full((6, 7), ".", dtype="<U9")
         self.no_winner = True
+        # red_token = Fore.RED + "O" + Style.RESET_ALL
+        # blue_token = Fore.BLUE + "O" + Style.RESET_ALL
+        self.player_tokens = {}
+        # self.player_tokens = {
+        #     "1": red_token,
+        #     "2": blue_token,
+        # }
+        self.player_tokens = {
+            "1": "X",
+            "2": "O",
+        }
 
     def show(self):
         # Show current board state
         print(tabulate(np.flip(self.board_state, 0), tablefmt="grid"))
+
+        # print(tabulate(self.board_state, tablefmt="grid"))
 
     # TODO: Add valueerror if you add submit an invalid input
 
@@ -39,14 +53,17 @@ class Connect4Board:
     def get_rows(self, col):
         # Check which rows are available for column
         for r in range(self.rows):
-            if self.board_state[r][col] == 0:
+            if self.board_state[r][col] == ".":
                 return r
 
     def play_piece(self, player, col):
         # Player plays a piece
         row = self.get_rows(col)
+
         if self.valid_move(row, col):
-            self.board_state[row, col] = player  # player makes move
+            self.board_state[row, col] = self.player_tokens[
+                str(player)
+            ]  # player makes move
 
         # Check if that move won the game
         winner = self.check_game_over(player, row, col)
@@ -61,71 +78,68 @@ class Connect4Board:
         # Check horizontal, check if row has 4 in a row
         for cc in range(self.cols - 3):
             if (
-                self.board_state[row][cc] == player
-                and self.board_state[row][cc + 1] == player
-                and self.board_state[row][cc + 2] == player
-                and self.board_state[row][cc + 3] == player
+                self.board_state[row][cc] == self.player_tokens[str(player)]
+                and self.board_state[row][cc + 1] == self.player_tokens[str(player)]
+                and self.board_state[row][cc + 2] == self.player_tokens[str(player)]
+                and self.board_state[row][cc + 3] == self.player_tokens[str(player)]
             ):
                 return True
 
         # Check vertical, check if col has 4 in a row
         for rr in range(self.rows - 3):
             if (
-                self.board_state[rr][col] == player
-                and self.board_state[rr + 1][col] == player
-                and self.board_state[rr + 2][col] == player
-                and self.board_state[rr + 3][col] == player
+                self.board_state[rr][col] == self.player_tokens[str(player)]
+                and self.board_state[rr + 1][col] == self.player_tokens[str(player)]
+                and self.board_state[rr + 2][col] == self.player_tokens[str(player)]
+                and self.board_state[rr + 3][col] == self.player_tokens[str(player)]
             ):
                 return True
 
-        # TODO: Don't do a whole for loop, can optimize the diagonals
-        # Only need one forloop over each of the offsets from -3 to 0, one forloop
-        # x+n, y-n (negative)
-
         # Check right diagonal, check if diag has 4 in a row
-        for cc in range(self.cols - 3):
-            for rr in range(self.rows - 3):
-                if (
-                    self.board_state[rr][cc] == player
-                    and self.board_state[rr + 1][cc + 1] == player
-                    and self.board_state[rr + 2][cc + 2] == player
-                    and self.board_state[rr + 3][cc + 3] == player
-                ):
-                    return True
+        for offset in range(0, 4):
+            if (
+                self.board_state[row - offset][col - offset]
+                == self.player_tokens[str(player)]
+                and self.board_state[row - offset + 1][col - offset + 1]
+                == self.player_tokens[str(player)]
+                and self.board_state[row - offset + 2][col - offset + 2]
+                == self.player_tokens[str(player)]
+                and self.board_state[row - offset + 3][col - offset + 3]
+                == self.player_tokens[str(player)]
+            ):
+                return True
 
         # Check left diagonal, check if left diag has 4 in a row
-        # TODO: can do a bounds check to make sure you're not looking at the wrong offset.
-        for cc in range(self.cols - 3):
-            for rr in range(3, self.rows):
-                if (
-                    self.board_state[rr][cc] == player
-                    and self.board_state[rr - 1][cc + 1] == player
-                    and self.board_state[rr - 2][cc + 2] == player
-                    and self.board_state[rr - 3][cc + 3] == player
-                ):
-                    return True
+        for offset in range(0, 4):
+            if (
+                self.board_state[row - offset][col - offset]
+                == self.player_tokens[str(player)]
+                and self.board_state[row - offset - 1][col - offset + 1]
+                == self.player_tokens[str(player)]
+                and self.board_state[row - offset - 2][col - offset + 2]
+                == self.player_tokens[str(player)]
+                and self.board_state[row - offset - 3][col - offset + 3]
+                == self.player_tokens[str(player)]
+            ):
+                return True
         return False
 
 
 def play_connect4():
     # Init empty board
     game = Connect4Board()
-    inputs = [0, 6, 1, 6, 2, 6, 3]
     while game.no_winner:  # no one has won yet
-        # Play a turn
-        # col = int(input("Player 1 Select a Column (0-6):"))
-        for col in inputs:
+        for player in [1, 2]:
+            if not game.no_winner:
+                break
 
-            game.play_piece(1, col)  # play piece for player 1
-            print(game.no_winner)
-            # game.check_game_over()  # check if game is over
+            # Play a turn
+            col = int(input(f"Player {player} Select a Column (0-6):"))
+
+            game.play_piece(player, col)  # play piece for player 1
+
             game.show()
-
-            # col = int(input("Player 2 Select a Column (0-6):"))
-            game.play_piece(2, col)  # play piece for player 2
-            print(game.no_winner)
-            # game.check_game_over()
-            game.show()  # Show board
+            # print(game.board_state)
 
 
 if __name__ == "__main__":
