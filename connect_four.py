@@ -153,6 +153,7 @@ def play_connect4():
                 game.play_piece(player, col)  # play piece for player 1
 
                 game.show()
+                print(game.board_state)
 
 
 if __name__ == "__main__":
