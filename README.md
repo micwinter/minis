@@ -3,7 +3,7 @@ Small projects for various purposes.
 
 1. Connect Four
 
-    Play connect four using the `connect_four.py` script. To play, run `python connect_four.py` in your terminal. You can either play against another human (player 2) or play against a rather naive but annoying computer.
+    Play connect four using the `connect_four.py` script. To play, run `python connect_four.py` in your terminal. You can either play against another human (player 2) or play against a rather naive but annoying computer. (You may encounter bugs, play at your own risk.)
 
 2. Crackle pop
 
