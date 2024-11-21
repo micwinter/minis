@@ -9,6 +9,9 @@ Small projects for various purposes.
 
     Crackle pop is a program that prints out the numbers 1 to 100 and will output some text depending on whether the number is divisible by specific numbers. To run: `python cracklepop.py`.
 
-3. Water boiler
+3. Game of Life
+    Written during a paired coding session at Recurse Center. Worked with @mauratee on building the Game of Life (check out its wiki page) in python. To run: `python GameofLife.py`.
+
+4. Water boiler
 
     Written during Creative Coding at Recurse Center. Based on the prompt "Write something boring", it is a script that generates numbers (while water is boiling) and if those numbers add up to a threshold, water will boil and an ASCII image of water boiling will appear in terminal. To run: `python water_boiler.py`. 
