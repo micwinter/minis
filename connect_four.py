@@ -17,7 +17,6 @@ class Connect4Board:
         self.empty_marker = "_"
         self.board_state = np.full((6, 7), self.empty_marker, dtype="<U9")
         self.no_winner = True
-        self.player_tokens = {}
         self.player_tokens = {
             "1": "X",
             "2": "O",
@@ -68,6 +67,68 @@ class Connect4Board:
         if winner:
             print(f"Game over, player {player} wins!")
             self.no_winner = False
+
+    def check_game_almost_over(self, player, row, col):
+        # Check board state to see if game is almost over
+        # (for computer use)
+
+        # Check horizontal, check if row has 3 in a row
+        for cc in range(self.cols - 2):
+            if (0 <= cc <= self.cols - 1) and (0 <= cc + 2 <= self.cols - 1):
+                if (
+                    self.board_state[row][cc] == self.player_tokens[str(player)]
+                    and self.board_state[row][cc + 1] == self.player_tokens[str(player)]
+                    and self.board_state[row][cc + 2] == self.player_tokens[str(player)]
+                ):
+                    return True
+
+        # Check vertical, check if col has 3 in a row
+        for rr in range(self.rows - 2):
+            if (0 <= rr <= self.rows - 1) and (0 <= rr + 2 <= self.rows - 1):
+                if (
+                    self.board_state[rr][col] == self.player_tokens[str(player)]
+                    and self.board_state[rr + 1][col] == self.player_tokens[str(player)]
+                    and self.board_state[rr + 2][col] == self.player_tokens[str(player)]
+                ):
+                    return True
+
+        # Check right diagonal, check if diag has 4 in a row
+        # TODO: Add conditions so that the checks don't go off the board.
+        for offset in range(0, 3):
+            if (
+                (0 <= row - offset <= self.rows - 1)
+                and (0 <= row - offset + 2 <= self.rows - 1)
+                and (0 <= col - offset <= self.cols - 1)
+                and (0 <= col - offset + 2 <= self.cols - 1)
+            ):
+                if (
+                    self.board_state[row - offset][col - offset]
+                    == self.player_tokens[str(player)]
+                    and self.board_state[row - offset + 1][col - offset + 1]
+                    == self.player_tokens[str(player)]
+                    and self.board_state[row - offset + 2][col - offset + 2]
+                    == self.player_tokens[str(player)]
+                ):
+                    return True
+
+        # Check left diagonal, check if left diag has 3 in a row
+        for offset in range(0, 3):
+            if (
+                (0 <= row + offset <= self.rows - 1)
+                and (0 <= row + offset - 2 <= self.rows - 1)
+                and (0 <= col - offset <= self.cols - 1)
+                and (0 <= col - offset + 2 <= self.cols - 1)
+            ):
+                if (
+                    self.board_state[row + offset][col - offset]
+                    == self.player_tokens[str(player)]
+                    and self.board_state[row + offset - 1][col - offset + 1]
+                    == self.player_tokens[str(player)]
+                    and self.board_state[row + offset - 2][col - offset + 2]
+                    == self.player_tokens[str(player)]
+                ):
+                    return True
+        return False
 
     def check_game_over(self, player, row, col):
         # Check board state to see if game is over
@@ -140,20 +201,57 @@ class Connect4Board:
 def play_connect4():
     # Init empty board
     game = Connect4Board()
-    while game.no_winner:  # no one has won yet
-        for player in [1, 2]:
-            game.valid_input = False
-            while not game.valid_input:
-                if not game.no_winner:
-                    break
+    game_mode = int(
+        input(f"Would you like to play against a computer (1) or a person (2)")
+    )
 
-                # Play a turn
-                col = int(input(f"Player {player} Select a Column (1-7):"))
+    if game_mode == 1:  # Playing against a computer
+        move_history = []
+        while game.no_winner:  # no one has won yet
+            for player in [1, 2]:
+                game.valid_input = False
+                while not game.valid_input:
+                    if not game.no_winner:
+                        break
 
-                game.play_piece(player, col)  # play piece for player 1
+                    if player == 2:
+                        # Tell computer to play a move
+                        print("Computer player 2 is making a move")
+                        get_player_1_row = game.get_rows(move_history[-1])
+                        if game.check_game_almost_over(
+                            1, get_player_1_row - 1, move_history[-1]
+                        ):
+                            # Have computer player block
+                            print("Player 1 has 3 in a row")
+                        col = np.random.randint(
+                            move_history[-1] - 1, move_history[-1] + 1
+                        )
+                    else:
+                        # Play a turn
+                        col = int(input(f"Player {player} Select a Column (1-7):"))
+                        move_history.append(col)
 
-                game.show()
-                print(game.board_state)
+                    game.play_piece(player, col)  # play piece for player 1
+
+                    game.show()
+    elif game_mode == 2:  # Playing against a person
+        while game.no_winner:  # no one has won yet
+            for player in [1, 2]:
+                game.valid_input = False
+                while not game.valid_input:
+                    if not game.no_winner:
+                        break
+
+                    # Play a turn
+                    col = int(input(f"Player {player} Select a Column (1-7):"))
+
+                    game.play_piece(player, col)  # play piece for player 1
+
+                    game.show()
+    else:
+        raise ValueError(
+            "Please choose either 1 for playing against computer or 2 for playing against a person!"
+        )
 
 
 if __name__ == "__main__":
