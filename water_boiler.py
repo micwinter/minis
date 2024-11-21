@@ -72,7 +72,7 @@ print("Waiting for water to boil...\n")
 
 while current_sum < target_sum:
     # Generate a random number
-    number = random.randint(-20, 20)
+    number = random.randint(-10, 20)
     current_sum += number
     # print(f"Generated: {number} | Current Sum: {current_sum}")
 
